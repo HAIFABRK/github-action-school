@@ -2,6 +2,14 @@ name: CI/CD Pipeline 2
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy_mode:
+        description: 'Choose deploy mode: Push or Skip Push'
+        required: true
+        default: 'push'
+        options:
+          - push
+          - skip_push  
 
 jobs:
   lint-and-test:
@@ -45,5 +53,6 @@ jobs:
       - name: Build docker image
         run: docker build -t ${{ secrets.brikihaifa }}/github-action-school .
       - name: Push to Dockerhub
+        if: ${{ github.event.inputs.deploy_mode == 'push' }}
         run: docker push ${{ secrets.brikihaifa }}/github-action-school
   
