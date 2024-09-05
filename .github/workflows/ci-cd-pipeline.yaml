@@ -2,7 +2,14 @@ name: CI/CD Pipeline
 
 on:
   workflow_dispatch:
-
+  inputs:
+    deploy_mode:
+      description: 'choose mode: Push or skip'
+      required: true
+      default:'push'
+      options:
+        -push
+        -skip push
 jobs:
   lint-and-test:
     name: Linting and testing
@@ -45,6 +52,7 @@ jobs:
       - name: Build docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/github-action-school .
       - name: Push to Dockerhub
+        if: ${{ github.event.inputs.deploy_mode == 'push' }}
         run: docker push ${{ secrets.DOCKER_USERNAME }}/github-action-school
   deploy:
     name: Deploy to EC2
